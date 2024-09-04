@@ -9,7 +9,7 @@ class Role(Enum):
 
 
 class BaseUser(BaseModel):
-    name: str
+    username: str
 
 
 class LoginUser(BaseUser):

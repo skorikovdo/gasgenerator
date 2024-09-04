@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     # Token settings
     SECRET_KEY: str
     SECRET_KEY_REFRESH: str
-    ALGORITM: str
+    ALGORITHM: str
     ACCESS_TOKEN_LIFETIME_MINUTE: int
     REFRESH_TOKEN_LIFETIME_MINUTE: int
 

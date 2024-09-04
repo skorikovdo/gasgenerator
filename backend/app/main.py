@@ -7,6 +7,7 @@ from .config import settings
 from .routes.auth import router
 from .routes.test import router as test_router
 from .services.auth import check_access_token
+from .admin.setup import init_admin
 
 origins = [
     "*",
@@ -14,6 +15,7 @@ origins = [
 
 
 app = FastAPI(debug=settings.DEBUG)
+init_admin(app)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -33,4 +35,5 @@ app.include_router(
 
 @app.get("/")
 def root() -> dict:
-    return {"data": random.randint(1, 100)}
+    rand_list = [str(random.randint(1, 100)) for _ in range(10)]
+    return {"data": rand_list}
