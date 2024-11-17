@@ -22,6 +22,8 @@ class UserAdmin(ModelView, model=UserDB):
         UserDB.company,
     ]
 
+    form_excluded_columns = [UserDB.create_at]
+
     async def on_model_change(
         self, data: dict, model: Any, is_created: bool, request: Request
     ) -> None:

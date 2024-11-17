@@ -1,7 +1,8 @@
 from typing import Annotated
-from fastapi import Response, Request
+from fastapi import Response, Request, Cookie
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from ..database import get_db
@@ -20,12 +21,23 @@ router = APIRouter()
 def login(user: LoginUser, db: Annotated[Session, Depends(get_db)], response: Response):
     auth_user = authenticate_user(user, db)
     access, refresh = create_tokens(auth_user)
-    response.set_cookie(key="refresh_token", value=f"Bearer {refresh}", httponly=True)
-    return {
-        "access_token": access,
-        "token_type": "bearer",
-        "user": {"name": auth_user.name, "id": auth_user.id},
-    }
+    response = JSONResponse(
+        content={
+            "access_token": access,
+            "token_type": "bearer",
+            "user": {"name": auth_user.name, "id": auth_user.id},
+        }
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=f"Bearer {refresh}",
+        httponly=True,
+        secure=True,
+        # samesite="none",
+        expires=60 * 60 * 24,
+        # domain="localhost",
+    )
+    return response
 
 
 @router.post("/refresh-token")
@@ -39,7 +51,12 @@ def logout():
 
 
 @router.get("/current-user", dependencies=[Depends(check_access_token)])
-def get_current_user(request: Request, db: Annotated[Session, Depends(get_db)]) -> User | None:
+def get_current_user(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    refresh_token: Annotated[str | None, Cookie()] = None,
+) -> User | None:
+    print(refresh_token)
     user = get_current_user_by_id(request.state.user_id, db)
     return user
 

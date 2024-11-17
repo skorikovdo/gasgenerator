@@ -36,12 +36,6 @@ def create_tokens(user: UserDB) -> tuple:
     return access_token, refresh_token
 
 
-def register(db: Session, user: LoginUser):
-    user_db = UserDB(name=user.name, hashed_password=create_pwd_hash(user.password))
-    db.add(user_db)
-    db.commit()
-
-
 def create_pwd_hash(pwd: str) -> str:
     pwd_bytes = pwd.encode("utf-8")
     salt = bcrypt.gensalt()

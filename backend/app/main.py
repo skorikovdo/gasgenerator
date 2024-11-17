@@ -1,17 +1,17 @@
 import random
 
 from fastapi import Depends, FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+
+from starlette.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .routes.auth import router
 from .routes.test import router as test_router
 from .services.auth import check_access_token
+
 from .admin.setup import init_admin
 
-origins = [
-    "*",
-]
+origins = ["http://localhost:3000"]
 
 
 app = FastAPI(debug=settings.DEBUG)
@@ -23,6 +23,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 app.include_router(router, prefix="/auth", tags=["auth"])
 app.include_router(
